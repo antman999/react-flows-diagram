@@ -7,6 +7,8 @@ import {
   Background,
   useNodesState,
   useEdgesState,
+  applyNodeChanges,
+  applyEdgeChanges,
   addEdge,
 } from "@xyflow/react";
 import "@xyflow/react/dist/style.css";
@@ -25,17 +27,59 @@ import "@xyflow/react/dist/style.css";
  * We can use the hooks provided (useNodesState, useEdgesState, addEdge)
  *  */
 const initialNodes = [
-  { id: "1", position: { x: 0, y: 0 }, data: { label: "1" } },
-  { id: "2", position: { x: 0, y: 100 }, data: { label: "2" } },
+  {
+    id: "1",
+    type: "input",
+    position: { x: 250, y: 25 },
+    data: { label: "Input node" },
+    style: { backgroundColor: "#6ede87", color: "white" },
+  },
+  {
+    id: "2",
+    position: { x: 100, y: 125 },
+    data: { label: <div>Default Node</div> },
+    style: { backgroundColor: "#ff0072", color: "white" },
+  },
+  {
+    id: "3",
+    type: "output",
+    data: { label: "Output node" },
+    position: { x: 250, y: 250 },
+    style: { backgroundColor: "#6865A5", color: "white" },
+  },
 ];
-const initialEdges = [{ id: "e1-2", source: "1", target: "2" }];
+
+const nodeColor = (node) => {
+  switch (node.type) {
+    case "input":
+      return "#6ede87";
+    case "output":
+      return "#6865A5";
+    default:
+      return "#ff0072";
+  }
+};
+
+const initialEdges = [
+  { id: "e1-2", source: "1", target: "2" },
+  { id: "e2-3", source: "2", target: "3", animated: true },
+];
 
 function App() {
-  const [nodes, setNodes, onNodesChange] = useNodesState(initialNodes);
-  const [edges, setEdges, onEdgesChange] = useEdgesState(initialEdges);
+  const [nodes, setNodes] = useNodesState(initialNodes);
+  const [edges, setEdges] = useEdgesState(initialEdges);
 
+  const onNodesChange = React.useCallback(
+    (changes) => setNodes((nds) => applyNodeChanges(changes, nds)),
+    [setNodes]
+  );
+  const onEdgesChange = React.useCallback(
+    (changes) => setEdges((eds) => applyEdgeChanges(changes, eds)),
+    [setEdges]
+  );
   const onConnect = React.useCallback(
-    (params) => setEdges((edge) => addEdge(params, edge)),
+    (params) =>
+      setEdges((edge) => addEdge({ ...params, animated: true }, edge)),
     [setEdges]
   );
 
@@ -50,9 +94,10 @@ function App() {
         onNodesChange={onNodesChange}
         onEdgesChange={onEdgesChange}
         onConnect={onConnect}
+        fitView
       >
         <Controls />
-        <MiniMap />
+        <MiniMap nodeColor={nodeColor} nodeStrokeWidth={3} />
         <Background variant="dots" gap={12} size={1} />
       </ReactFlow>
     </div>
