@@ -12,6 +12,8 @@ import {
   addEdge,
 } from "@xyflow/react";
 import "@xyflow/react/dist/style.css";
+import { initialNodes, initialEdges } from "./node-edges";
+import { TextUpdaterNode } from "./nodes/TextUpdaterNode";
 
 /**
  * The React flow component must be wrapped in a element with a width and height
@@ -26,28 +28,6 @@ import "@xyflow/react/dist/style.css";
  * - Callback for WHAT to Ddo when NODES are CONNECTED
  * We can use the hooks provided (useNodesState, useEdgesState, addEdge)
  *  */
-const initialNodes = [
-  {
-    id: "1",
-    type: "input",
-    position: { x: 250, y: 25 },
-    data: { label: "Input node" },
-    style: { backgroundColor: "#6ede87", color: "white" },
-  },
-  {
-    id: "2",
-    position: { x: 100, y: 125 },
-    data: { label: <div>Default Node</div> },
-    style: { backgroundColor: "#ff0072", color: "white" },
-  },
-  {
-    id: "3",
-    type: "output",
-    data: { label: "Output node" },
-    position: { x: 250, y: 250 },
-    style: { backgroundColor: "#6865A5", color: "white" },
-  },
-];
 
 const nodeColor = (node) => {
   switch (node.type) {
@@ -59,11 +39,6 @@ const nodeColor = (node) => {
       return "#ff0072";
   }
 };
-
-const initialEdges = [
-  { id: "e1-2", source: "1", target: "2" },
-  { id: "e2-3", source: "2", target: "3", animated: true },
-];
 
 function App() {
   const [nodes, setNodes] = useNodesState(initialNodes);
@@ -83,9 +58,13 @@ function App() {
     [setEdges]
   );
 
-  console.log(onConnect, "onConnect");
-  console.log(nodes, "nodes");
-  console.log(edges, "edges");
+  const nodeTypes = React.useMemo(
+    () => ({
+      textUpdater: TextUpdaterNode,
+    }),
+    []
+  );
+
   return (
     <div style={{ width: "100vw", height: "100vh" }}>
       <ReactFlow
@@ -94,6 +73,7 @@ function App() {
         onNodesChange={onNodesChange}
         onEdgesChange={onEdgesChange}
         onConnect={onConnect}
+        nodeTypes={nodeTypes}
         fitView
       >
         <Controls />
