@@ -14,6 +14,7 @@ import {
 import "@xyflow/react/dist/style.css";
 import { initialNodes, initialEdges } from "./node-edges";
 import { TextUpdaterNode } from "./nodes/TextUpdaterNode";
+import Sidebar from "./Sidebar";
 
 /**
  * The React flow component must be wrapped in a element with a width and height
@@ -66,20 +67,23 @@ function App() {
   );
 
   return (
-    <div style={{ width: "100vw", height: "100vh" }}>
-      <ReactFlow
-        nodes={nodes}
-        edges={edges}
-        onNodesChange={onNodesChange}
-        onEdgesChange={onEdgesChange}
-        onConnect={onConnect}
-        nodeTypes={nodeTypes}
-        fitView
-      >
-        <Controls />
-        <MiniMap nodeColor={nodeColor} nodeStrokeWidth={3} />
-        <Background variant="dots" gap={12} size={1} />
-      </ReactFlow>
+    <div className="app-container">
+      <Sidebar />
+      <div className="reactflow-wrapper">
+        <ReactFlow
+          nodes={nodes}
+          edges={edges}
+          onNodesChange={onNodesChange}
+          onEdgesChange={onEdgesChange}
+          onConnect={onConnect}
+          nodeTypes={nodeTypes}
+          fitView
+        >
+          <Controls />
+          <MiniMap nodeColor={nodeColor} nodeStrokeWidth={3} />
+          <Background variant="dots" gap={12} size={1} />
+        </ReactFlow>
+      </div>
     </div>
   );
 }
